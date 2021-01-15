@@ -5,9 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Bassini_AsyncServer_5B"
         mc:Ignorable="d"
-        Title="MainWindow" Height="162" Width="166.4">
+        Title="MainWindow" Height="241.116" Width="322.749">
     <Grid>
-        <Button x:Name="btnAscolta" Content="Metti in ascolto..." HorizontalAlignment="Left" Margin="31,29,0,0" VerticalAlignment="Top" Width="105" Height="61" Click="btnAscolta_Click"/>
+        <Button x:Name="btnAscolta" Content="Metti in ascolto..." HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="103" Height="32" Click="btnAscolta_Click"/>
+        <Button x:Name="btnDisconnetti" Content="Disconetti" HorizontalAlignment="Left" Margin="10,47,0,0" VerticalAlignment="Top" Width="103" Height="32" Click="btnDisconnetti_Click"/>
+        <TextBox x:Name="txtMessaggio" HorizontalAlignment="Left" Height="23" Margin="125,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="180"/>
+        <Button x:Name="btnInvia" Content="Invia" HorizontalAlignment="Left" Margin="230,38,0,0" VerticalAlignment="Top" Width="75" Click="btnInvia_Click"/>
 
     </Grid>
 </Window>

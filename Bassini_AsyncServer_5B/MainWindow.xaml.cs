@@ -33,5 +33,15 @@ namespace Bassini_AsyncServer_5B
         {
             mServer.InAscolto();
         }
+
+        private void btnDisconnetti_Click(object sender, RoutedEventArgs e)
+        {
+            mServer.Disconnetti();
+        }
+
+        private void btnInvia_Click(object sender, RoutedEventArgs e)
+        {
+            mServer.InviaATutti(txtMessaggio.Text);
+        }
     }
 }

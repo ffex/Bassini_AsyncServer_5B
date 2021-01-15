@@ -15,17 +15,22 @@ namespace Bassini_AsyncSocketLib
         IPAddress mIP;
         int mPort;
         TcpListener mServer;
+        List<TcpClient> mClients;
 
+        public AsyncSocketServer()
+        {
+            mClients = new List<TcpClient>();
+        }
 
         // Server inizia as ascoltare
-        public async void InAscolto(IPAddress ipaddr = null,int port = 23000)
+        public async void InAscolto(IPAddress ipaddr = null, int port = 23000)
         {
             //controlli generali
-            if(ipaddr == null)
+            if (ipaddr == null)
             {
                 ipaddr = IPAddress.Any;
             }
-            if(port <0 || port > 65535)
+            if (port < 0 || port > 65535)
             {
                 port = 23000;
             }
@@ -41,11 +46,17 @@ namespace Bassini_AsyncSocketLib
             mServer.Start();
 
             Debug.WriteLine("Server avviato.");
+            while (true)
+            {
+                TcpClient client = await mServer.AcceptTcpClientAsync();
 
-            TcpClient client = await mServer.AcceptTcpClientAsync();
+                mClients.Add(client);
 
-            Debug.WriteLine("Client Connesso: " + client.Client.RemoteEndPoint);
-            RiceviMessaggio(client);
+                Debug.WriteLine("Client Connessi: {0}. Client Connesso: {1}",
+                    mClients.Count, client.Client.RemoteEndPoint);
+
+                RiceviMessaggio(client);
+            }
 
         }
         public async void RiceviMessaggio(TcpClient client)
@@ -65,13 +76,14 @@ namespace Bassini_AsyncSocketLib
                     nBytes = await reader.ReadAsync(buff, 0, buff.Length);
                     if (nBytes == 0)
                     {
+                        RimuoviClient(client);
                         Debug.WriteLine("Client Disconnesso");
                         break;
                     }
                     string recvText = new string(buff);
                     Debug.WriteLine("N° byte: {0}. Messaggio: {1}", nBytes, recvText);
                 }
-                
+
             }
             catch (Exception ex)
             {
@@ -79,7 +91,53 @@ namespace Bassini_AsyncSocketLib
                 Debug.WriteLine("Errore: " + ex.Message);
             }
 
+
+        }
+        private void RimuoviClient(TcpClient client)
+        {
+            if (mClients.Contains(client))
+            {
+                mClients.Remove(client);
+            }
+        }
+        public void InviaATutti(string messaggio)
+        {
+            try
+            {
+                foreach (TcpClient client in mClients)
+                {
+                    byte[] buff = Encoding.ASCII.GetBytes(messaggio);
+                    client.GetStream().WriteAsync(buff, 0, buff.Length);
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                Debug.WriteLine("Errore: " + ex.Message);
+            }
             
         }
+        public void Disconnetti()
+        {
+            try
+            {
+                foreach (TcpClient client in mClients)
+                {
+                    client.Close();
+                    RimuoviClient(client);
+                }
+                mServer.Stop();
+                
+                
+            }
+            catch (Exception ex)
+            {
+
+                Debug.WriteLine("Errore: "+ ex.Message);
+            }
+
+        }
+
     }
 }
